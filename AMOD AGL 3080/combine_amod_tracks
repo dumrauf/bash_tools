@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# This bash script is highly tailored to GPS FILES produced by the AMOD AGL3080 GPS tracker. 
+# It concatenates all FILES that match the below specified 'FILE_PATTERN' in lexicographical
+# order to the given output filename.
+# Example output:
+#	$ cat_daily_amod_track GPS_Florida.log
+#	Adding GPS_20851228.log to GPS_Florida.log...
+#	Adding GPS_20851301.log to GPS_Florida.log...
+#	Adding GPS_20851302.log to GPS_Florida.log...
+#	Adding GPS_20851303.log to GPS_Florida.log...
+#	Adding GPS_20851304.log to GPS_Florida.log...
+#	Adding GPS_20851305.log to GPS_Florida.log...
+#	Adding GPS_20851306.log to GPS_Florida.log...
+#	Adding GPS_20851307.log to GPS_Florida.log...
+#	Adding GPS_20851308.log to GPS_Florida.log...
+#	...done
+#	Added 9 files to GPS_Florida.log
+
+
+OUTFILE=$1
+FILE_PATTERN='GPS_*.log'
+STRING_TO_REMOVE='$ADVER,3080,2.3'
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 outfile"
+    exit -1
+fi
+
+if [ -f $OUTFILE ];
+then
+	echo -e "Output file $OUTFILE already exists. Aborting..."
+	exit 1
+fi
+
+FILES=($(ls $FILE_PATTERN))
+FIRST_FILE=${FILES[0]}
+LAST_FILE=${FILES[${#FILES[@]}-1]}
+
+for FILE in "${FILES[@]}"; do
+	echo "Adding $FILE to $OUTFILE..."
+	if [ $FILE = $FIRST_FILE ];
+	then
+		cat $FILE > $OUTFILE
+		echo >> $OUTFILE
+	else
+	    cat $FILE | grep -v $STRING_TO_REMOVE >> $OUTFILE
+	fi
+done
+echo '...done'
+echo "Added ${#FILES[@]} files to $OUTFILE"
+
+echo
+check_combined_amod_tracks "$OUTFILE"

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# This bash script is highly tailored to GPS files produced by the AMOD AGL3080 GPS tracker. 
+#
+# This script convertes the NMEA 0813 sentences file given in $1 to the file given in $2, 
+# using the format in $3. Here, checks enforce that file $1 exists and file $2 does not exist
+# Example output:
+#	$ ./convert_nmea_to_gpx.sh GPS_20150208.log GPS_20150208.gpx gpx 10000
+#	Simplifying GPS_20851208.log to GPS_20851208.gpx with at most 10000 points...
+#	...done
+
+INFILE=$1
+OUTFILE=$2
+OUTFILE_FORMAT=$3
+MAX_NR_OF_POINTS=$4
+
+if [ "$#" -ne 4 ]; then
+    echo "Usage: $0 infile outfile outfile_format maxpoints"
+    exit -1
+fi
+if [ ! -f $INFILE ]; 
+then
+	echo -e "Input file $INFILE does not exist. Aborting..."
+	exit 1
+fi
+if [ -f $OUTFILE ];
+then
+	echo -e "Output file $OUTFILE already exists. Aborting..."
+	exit 1
+fi
+if ! hash gpsbabel 2>/dev/null;
+then
+        echo -e "This script requires 'gpsbabel' but it cannot be detected. Aborting..."
+        exit 1
+fi
+echo -e "Simplifying $INFILE to $OUTFILE with at most $MAX_NR_OF_POINTS points..."
+gpsbabel -r -t -w -i nmea -f "$INFILE" -x simplify,count=$MAX_NR_OF_POINTS -o $OUTFILE_FORMAT -F "$OUTFILE"
+echo -e "...done"

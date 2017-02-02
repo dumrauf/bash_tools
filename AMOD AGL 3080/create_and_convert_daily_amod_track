@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# This bash script is highly tailored to GPS files produced by the AMOD AGL3080 GPS tracker. 
+#
+# This script first executes the 'create_daily_amod_gps_track' script. This execution can be
+# customized  by an optional flag that suppresses the execution of the 'cat_amod_gps_logs'
+# script if only one GPS file could be detected
+# Afterwards, this script passes the most recently modified 'GPS*.log' file to the 
+# 'convert_nmea_to_gpx' script to convert it to GPX. In most cases, this should be the output 
+# of the previous script.
+# Example output:
+#	$ cat_and_convert_all_amod_logs
+#	Concatenating
+#	GPS_20851208_104104.log
+#	GPS_20851208_183802.log
+#	to
+#	GPS_20851208.log...
+#	...done
+#	Converting GPS_20851208.log to GPS_20851208.gpx...
+#	...done
+
+# Remark: Let us remark that this script will not convert the output of the 'cat_amod_gps_logs' 
+# script to GPX if another process creates a more recent file whose name matches 'GPS*.log'.
+
+if [ -z $1 ];
+then
+	IS_SKIPPING_SINGLE_AMOD_GPS_LOGS=false
+else
+	IS_SKIPPING_SINGLE_AMOD_GPS_LOGS=true
+fi
+
+if [ "$IS_SKIPPING_SINGLE_AMOD_GPS_LOGS" = true ] && [ $(ls GPS*.log | wc -l) -lt 2 ];
+then 
+	echo "Only one AMOD AGL3080 GPS tracker file could be detected. Skipping concatenation..."
+else
+	create_daily_amod_gps_track
+fi
+echo
+FILENAME=$(ls -t GPS*.log | head -1)
+convert_nmea_to_gpx $FILENAME ${FILENAME%.*}.gpx

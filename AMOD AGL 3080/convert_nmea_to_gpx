@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# This bash script is highly tailored to GPS files produced by the AMOD AGL3080 GPS tracker. 
+#
+# This script convertes the NMEA 0813 sentences file given in $1 to the GPX file given in $2.
+# Here, checks enforce that file $1 exists and file $2 does not exist
+# Example output:
+#	$ ./convert_nmea_to_gpx.sh GPS_20851208.log GPS_20851208.gpx
+#	Converting GPS_20851208.log to GPS_20851208.gpx...
+#	...done
+
+INFILE=$1
+OUTFILE=$2
+
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 infile outfile"
+    exit -1
+fi
+if [ ! -f $INFILE ]; 
+then
+	echo -e "Input file $INFILE does not exist. Aborting..."
+	exit 1
+fi
+if [ -f $OUTFILE ];
+then
+	echo -e "Output file $OUTFILE already exists. Aborting..."
+	exit 1
+fi
+
+if ! hash gpsbabel 2>/dev/null;
+then
+        echo -e "This script requires 'gpsbabel' but it cannot be detected. Aborting..."
+        exit 1
+fi
+
+echo -e "Converting $INFILE to $OUTFILE..."
+gpsbabel -r -t -w -i nmea -f $INFILE -o gpx -F $OUTFILE
+echo -e "...done"

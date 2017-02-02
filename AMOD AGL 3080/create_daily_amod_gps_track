@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# This bash script is highly tailored to GPS files produced by the AMOD AGL3080 GPS tracker. 
+#
+# This script concatenates all files in the current directory that match
+# the below 'FILE_FILTER' expression; here sorting is in lexicographical 
+# order.
+# The output is redirected to a file that is named after the first file
+# where everything after the second '_' is stripped and a '.log' is appended.
+# Example output:
+#	$ create_daily_amod_gps_log
+#	Concatenating
+#	GPS_20851208_104104.log
+#	GPS_20851208_183802.log
+#	to
+#	GPS_20851208.log...
+#	...done
+
+FILE_FILTER=GPS*.log
+OUTFILE_NAME=$(ls $FILE_FILTER | head -1 | grep -oP '[^_]+_[^_]+').log
+if [ -f $OUTFILE_NAME ];
+then
+	echo "File $OUTFILE_NAME already exists. Aborting..."
+else
+	combine_amod_tracks $OUTFILE_NAME
+fi
