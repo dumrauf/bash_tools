@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# This bash script is highly tailored towards the 'display_gps_tracks'
+# plugin for Sigal.
+# The script first combines all AMOD tracks in the current directory
+# to a single 'index.log' file and then zips the 'index.log' in 
+# 'index.log.zip'. Note that this matches the file format expected by
+# the 'display_gps_tracks' plugin for Sigal.
+
+
+# Stop on all errors
+set -e
+
+# Check dependencies
+source ../functions.sh
+DEPENDENCIES='combine_amod_tracks'
+check_dependencies "${DEPENDENCIES}"
+
+
+outfile="index.log"
+zipped_outfile="${outfile}".zip
+
+# Check that the "${zipped_outfile}" does not already exist
+if [ -f "${zipped_outfile}" ]
+then
+	echo "File '${zipped_outfile}' already exists. Aborting..."
+	exit 1
+fi
+
+# Combine all AMOD tracks to a single "${outfile}"
+combine_amod_tracks "${outfile}"
+
+# Zip the "${outfile}" to "${zipped_outfile}"
+echo "Zipping '${outfile}' to '${zipped_outfile}'..."
+zip -9 "${zipped_outfile}" index.log
+echo "...done zipping '${outfile}' to '${zipped_outfile}'!"
+
+echo "ALL DONE!"

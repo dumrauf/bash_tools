@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# This bash script creates a directory named "Public Album"
+# in the current directory
+
+
+PUBLIC_ALBUM_NAME='Public Album'
+
+echo "Creating directory '${PUBLIC_ALBUM_NAME}'..."
+mkdir -p "${PUBLIC_ALBUM_NAME}"
+echo "...done!"
+
