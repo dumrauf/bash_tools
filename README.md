@@ -17,3 +17,13 @@ Hence, the need for a collection of Bash scripts which automate the
 2. _Conversion_ of the concatenated GPS tracks
 
 was born.
+
+
+# Sigal Photo Gallery
+
+Taking and geotagging photos is great but sharing them with loved ones is even better. The tool of choice is the excellent [Sigal Gallery Builder](https://github.com/saimn/sigal). As I've come to customise Sigal a bit in terms of setup and plugins, the need to 
+
+ - automatically package numerous GPS tracks into a specific file format that could be picked up by a custom Sigal plugin and
+ - the initialisation of directories
+
+arose.
